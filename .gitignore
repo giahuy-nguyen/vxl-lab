@@ -1,0 +1,32 @@
+# STM32CubeIDE build output
+Debug/
+Release/
+*.bin
+*.elf
+*.hex
+*.map
+*.list
+*.asm
+*.o
+*.d
+*.su
+*.bak
+
+# IDE metadata
+.metadata/
+.settings/
+*.launch
+*.ioc
+*.mxproject
+.cproject
+.project
+
+# Proteus files (optional, if you don't want to track simulation files)
+proteus/*.pdsbak
+proteus/*.workspace
+
+# User-specific files
+*.log
+
+# Backup files
+*~
