@@ -108,7 +108,7 @@ int main(void)
 	HAL_GPIO_WritePin(Led_Gre_GPIO_Port, Led_Gre_Pin, GPIO_PIN_SET);
 	HAL_Delay(2000);
 
-// RED ON (5s), YELLOW OFF, GREEN OFF
+  // RED ON (5s), YELLOW OFF, GREEN OFF
 	HAL_GPIO_WritePin(Led_Red_GPIO_Port, Led_Red_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(Led_Yel_GPIO_Port, Led_Yel_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(Led_Gre_GPIO_Port, Led_Gre_Pin, GPIO_PIN_SET);
