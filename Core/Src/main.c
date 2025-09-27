@@ -61,8 +61,8 @@ uint16_t ledPins[12] = {D2_Pin, D3_Pin, D4_Pin,
                         D5_Pin, D6_Pin, D7_Pin, D8_Pin,
                         D9_Pin, D10_Pin, D11_Pin, D12_Pin, D1_Pin};
 
-int hour = 0;
-int minute = 0;
+int hour = 5;
+int minute = 15;
 int second = 0;
 
 void clearAllClock(){
@@ -92,28 +92,28 @@ void clearNumberOnClock(int num){
 }
 
 void updateClock() {
-    // Display the current time using the LEDs
-    clearAllClock(); // Clear all LEDs
+    clearAllClock();
 
-    // Update time
-    for (hour = 0; hour < 12; hour++) {
-        setNumberOnClock(hour); //Current hour
-        HAL_Delay(100);
+    setNumberOnClock(hour);
+    setNumberOnClock(minute / 5);
+    setNumberOnClock(second / 5);
 
-        for (minute = 0; minute < 60; minute++) {
-            clearAllClock(); // Clear all LEDs (if no clear it will keep old value like hour=1 but led will ON 0h and 1h)
-            setNumberOnClock(hour); // Current hour
-            setNumberOnClock(minute / 5); // Current minute (5-min increments)
-            HAL_Delay(100);
+    HAL_Delay(500);
 
-            for (second = 0; second < 60; second++) {
-                clearAllClock(); // Clear all LEDs
-                setNumberOnClock(hour); // Current hour
-                setNumberOnClock(minute / 5); // Current minute (5-min increments)
-                setNumberOnClock(second / 5); // Current second (5-sec increments)
-                HAL_Delay(100);
-            }
-        }
+    second++;
+
+    if (second >= 60) {
+        second = 0;
+        minute++;
+    }
+
+    if (minute >= 60) {
+        minute = 0;
+        hour++;
+    }
+
+    if (hour >= 12) {
+        hour = 0;
     }
 }
 /* USER CODE END 0 */
