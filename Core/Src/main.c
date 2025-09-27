@@ -54,12 +54,11 @@
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-
+/* Private function prototypes */
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 void display7SEG(int number);
 void display7SEG_2(int number);
-void setTrafficLight1(int state);
-void setTrafficLight2(int state);
-void updateTrafficLights(int counter1, int state1, int state2, int counter2);
 
 void display7SEG(int number) {
     if (number < 0 || number > 9) return;
@@ -159,175 +158,84 @@ void display7SEG_2(int number) {
             }
 }
 
-void setTrafficLight1(int state) {
-    switch (state) {
-        case RED:
-            HAL_GPIO_WritePin(GPIOA, LED_RED_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_YELLOW_Pin | LED_GREEN_Pin, GPIO_PIN_SET);
-            break;
-        case YELLOW:
-            HAL_GPIO_WritePin(GPIOA, LED_YELLOW_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_RED_Pin | LED_GREEN_Pin, GPIO_PIN_SET);
-            break;
-        case GREEN:
-            HAL_GPIO_WritePin(GPIOA, LED_GREEN_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_RED_Pin | LED_YELLOW_Pin, GPIO_PIN_SET);
-            break;
-    }
-}
-
-void setTrafficLight2(int state) {
-    switch (state) {
-        case RED:
-            HAL_GPIO_WritePin(GPIOA, LED_RED_2_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_YELLOW_2_Pin | LED_GREEN_2_Pin, GPIO_PIN_SET);
-            break;
-        case YELLOW:
-            HAL_GPIO_WritePin(GPIOA, LED_YELLOW_2_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_RED_2_Pin | LED_GREEN_2_Pin, GPIO_PIN_SET);
-            break;
-        case GREEN:
-            HAL_GPIO_WritePin(GPIOA, LED_GREEN_2_Pin, GPIO_PIN_RESET);
-            HAL_GPIO_WritePin(GPIOA, LED_RED_2_Pin | LED_YELLOW_2_Pin, GPIO_PIN_SET);
-            break;
-    }
-}
-
-void updateTrafficLights(int counter1, int state1, int counter2, int state2) {
-    // Update Traffic Light 1
-    if (state1 == RED && state2 == GREEN) {
-        if (counter1 >= RED_DURATION) {
-            setTrafficLight1(RED);
-        }
-        display7SEG(counter1);
-    } else if (state1 == GREEN && state2 == RED) {
-        if (counter1 >= GREEN_DURATION) {
-            setTrafficLight1(GREEN);
-        }
-        display7SEG(counter1);
-    } else if (state1 == YELLOW && state2 == RED) {
-        if (counter1 >= YELLOW_DURATION) {
-            setTrafficLight1(YELLOW);
-        }
-        display7SEG(counter1);
-        display7SEG_2(counter2);
-    }
-
-    // Update Traffic Light 2 (Opposite of Traffic Light 1)
-    if (state2 == RED && state1 == GREEN) {
-        if (counter2 >= RED_DURATION) {
-            setTrafficLight2(RED);
-        }
-        display7SEG_2(counter2);
-    } else if (state2 == GREEN && state1 == RED) {
-        if (counter2 >= GREEN_DURATION) {
-            setTrafficLight2(GREEN);
-        }
-        display7SEG_2(counter2);
-    } else if (state2 == YELLOW && state1 == RED) {
-        if (counter2 >= YELLOW_DURATION) {
-            setTrafficLight2(YELLOW);
-        }
-        display7SEG_2(counter2);
-        display7SEG(counter1);
-    }
-}
-
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+    /* MCU Configuration and Initialization */
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
 
-  /* USER CODE END 1 */
+    /* Initialize counters for countdown display */
+    int counter1 = RED_DURATION;
+    int state1 = RED;
+    int counter2 = GREEN_DURATION;
+    int state2 = GREEN;
 
-  /* MCU Configuration--------------------------------------------------------*/
+    while (1)
+    {
+        // Sequential format replacing updateTrafficLights function
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+        // Traffic Light 1 control
+        HAL_GPIO_WritePin(GPIOA, LED_RED_Pin, (state1 == RED) ? RESET : SET);
+        HAL_GPIO_WritePin(GPIOA, LED_YELLOW_Pin, (state1 == YELLOW) ? RESET : SET);
+        HAL_GPIO_WritePin(GPIOA, LED_GREEN_Pin, (state1 == GREEN) ? RESET : SET);
 
-  /* USER CODE BEGIN Init */
+        // Traffic Light 2 control
+        HAL_GPIO_WritePin(GPIOA, LED_RED_2_Pin, (state2 == RED) ? RESET : SET);
+        HAL_GPIO_WritePin(GPIOA, LED_YELLOW_2_Pin, (state2 == YELLOW) ? RESET : SET);
+        HAL_GPIO_WritePin(GPIOA, LED_GREEN_2_Pin, (state2 == GREEN) ? RESET : SET);
 
-  /* USER CODE END Init */
+        // Display counters
+        display7SEG(counter1);
+        display7SEG_2(counter2);
 
-  /* Configure the system clock */
-  SystemClock_Config();
+        // Decrement counters
+        counter1--;
+        counter2--;
 
-  /* USER CODE BEGIN SysInit */
+        // State transition for Traffic Light 1
+        switch(counter1) {
+            case 0:
+                switch(state1) {
+                    case RED:
+                        state1 = GREEN;
+                        counter1 = GREEN_DURATION;
+                        break;
+                    case GREEN:
+                        state1 = YELLOW;
+                        counter1 = YELLOW_DURATION;
+                        break;
+                    case YELLOW:
+                        state1 = RED;
+                        counter1 = RED_DURATION;
+                        break;
+                }
+                break;
+        }
 
-  /* USER CODE END SysInit */
+        // State transition for Traffic Light 2
+        switch(counter2) {
+            case 0:
+                switch(state2) {
+                    case RED:
+                        state2 = GREEN;
+                        counter2 = GREEN_DURATION;
+                        break;
+                    case GREEN:
+                        state2 = YELLOW;
+                        counter2 = YELLOW_DURATION;
+                        break;
+                    case YELLOW:
+                        state2 = RED;
+                        counter2 = RED_DURATION;
+                        break;
+                }
+                break;
+        }
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  int counter1 = RED_DURATION;
-  int state1 = RED;
-  int counter2 = GREEN_DURATION;
-  int state2 = GREEN;
-  while (1)
-  {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-	  // Update both traffic lights
-	  updateTrafficLights(counter1, state1, counter2, state2);
-
-	  // Decrease counters
-	  counter1--;
-	  counter2--;
-
-	  // Check for state transitions for both lights
-	  if (counter1 == 0) {
-		  if (state1 == RED) {
-			  state1 = GREEN;
-			  counter1 = GREEN_DURATION;
-		  } else if (state1 == GREEN) {
-			  state1 = YELLOW;
-			  counter1 = YELLOW_DURATION;
-		  } else if (state1 == YELLOW) {
-			  state1 = RED;
-			  counter1 = RED_DURATION;
-		  }
-	  }
-
-	  if (counter2 == 0) {
-		  if (state2 == GREEN) {
-			  state2 = YELLOW;
-			  counter2 = YELLOW_DURATION;
-		  } else if (state2 == YELLOW) {
-			  state2 = RED;
-			  counter2 = RED_DURATION;
-		  } else if (state2 == RED) {
-			  state2 = GREEN;
-			  counter2 = GREEN_DURATION;
-		  }
-	  }
-
-	  // Delay for 1 second between updates
-	  HAL_Delay(500);
-  /* USER CODE END 3 */
-  }
+        HAL_Delay(1000);
+    }
 }
-
 /**
   * @brief System Clock Configuration
   * @retval None
