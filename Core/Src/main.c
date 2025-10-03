@@ -194,43 +194,41 @@ int main(void)
         counter2--;
 
         // State transition for Traffic Light 1
-        switch(counter1) {
-            case 0:
-                switch(state1) {
-                    case RED:
-                        state1 = GREEN;
-                        counter1 = GREEN_DURATION;
-                        break;
-                    case GREEN:
-                        state1 = YELLOW;
-                        counter1 = YELLOW_DURATION;
-                        break;
-                    case YELLOW:
-                        state1 = RED;
-                        counter1 = RED_DURATION;
-                        break;
-                }
-                break;
+        if (counter1 == 0) {
+            switch(state1) {
+                case RED:
+                    state1 = GREEN;
+                    counter1 = GREEN_DURATION;
+                    break;
+                case GREEN:
+                    state1 = YELLOW;
+                    counter1 = YELLOW_DURATION;
+                    break;
+                case YELLOW:
+                    state1 = RED;
+                    counter1 = RED_DURATION;
+                    break;
+            }
+            break;
         }
 
         // State transition for Traffic Light 2
-        switch(counter2) {
-            case 0:
-                switch(state2) {
-                    case RED:
-                        state2 = GREEN;
-                        counter2 = GREEN_DURATION;
-                        break;
-                    case GREEN:
-                        state2 = YELLOW;
-                        counter2 = YELLOW_DURATION;
-                        break;
-                    case YELLOW:
-                        state2 = RED;
-                        counter2 = RED_DURATION;
-                        break;
-                }
-                break;
+        if (counter2 == 0) {
+            switch(state2) {
+                case RED:
+                    state2 = GREEN;
+                    counter2 = GREEN_DURATION;
+                    break;
+                case GREEN:
+                    state2 = YELLOW;
+                    counter2 = YELLOW_DURATION;
+                    break;
+                case YELLOW:
+                    state2 = RED;
+                    counter2 = RED_DURATION;
+                    break;
+            }
+            break;
         }
 
         HAL_Delay(1000);
